@@ -7,6 +7,9 @@
     - build-essential
     - python-dev
     - python-pip
+    - libpq-dev
+    - libjpeg-dev
+    - zlib1g-dev
     - postgresql-client
     - libpq-dev
     - python-pip
@@ -14,7 +17,7 @@
     - git
 
 - name: Clone Django Repository
-  git: repo=https://github.com/cewing/djangoblog_uwpce.git dest={{ django_home }} force=yes
+  git: repo=https://github.com/seleniumk/django-imager.git dest={{ django_home }} force=yes update=yes
 
 - name: Install Python Dependencies
   sudo: yes
@@ -38,14 +41,38 @@
   environment:
     DATABASE_URL: "{{ db_url }}"
   django_manage:
-    app_path: "{{ django_home }}"
-    settings: mysite.production
+    app_path: "{{ django_home }}/imagersite"
+    settings: imagersite.settings
     command: migrate
 
 - name: Collect Static Files
   environment:
     DATABASE_URL: "{{ db_url }}"
   django_manage:
-    app_path: "{{ django_home }}"
-    settings: mysite.production
+    app_path: "{{ django_home }}/imagersite"
+    settings: imagersite.settings
     command: collectstatic
+
+- name: Make Media Directory
+  sudo: yes
+  file: path={{ django_home }}/imagersite/media state=directory recurse=yes mode=0700 group=www-data owner=www-data
+
+- name: Run Thumbnail makemigrations
+  become: yes
+  become_method: sudo
+  environment:
+    DATABASE_URL: "{{ db_url }}"
+  django_manage:
+    app_path: "{{ django_home }}/imagersite"
+    settings: imagersite.settings
+    command: makemigrations thumbnail
+
+- name: Run Thumbnail Migrate
+  become: yes
+  become_method: sudo
+  environment:
+    DATABASE_URL: "{{ db_url }}"
+  django_manage:
+    app_path: "{{ django_home }}/imagersite"
+    settings: imagersite.settings
+    command: migrate thumbnail
