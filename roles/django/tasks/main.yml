@@ -8,8 +8,6 @@
     - python-dev
     - python-pip
     - libpq-dev
-    - libjpeg-dev
-    - zlib1g-dev
     - postgresql-client
     - libpq-dev
     - python-pip
@@ -17,7 +15,7 @@
     - git
 
 - name: Clone Django Repository
-  git: repo=https://github.com/seleniumk/django-imager.git dest={{ django_home }} force=yes update=yes
+  git: repo=https://github.com/BoardFellows/ScotlandYard.git dest={{ django_home }} force=yes update=yes
 
 - name: Install Python Dependencies
   sudo: yes
@@ -32,7 +30,6 @@
 - name: Get DB Password
   include_vars: secrets.yml
 
-
 - name: Set DB URL
   set_fact: 
     db_url: "{{ db_host.ec2_engine }}://{{ db_host.ec2_master_username }}:{{ db_password }}@{{ db_host.ec2__address }}:{{ db_host.ec2__port }}/{{ db_host.ec2_DBName }}"
@@ -41,38 +38,14 @@
   environment:
     DATABASE_URL: "{{ db_url }}"
   django_manage:
-    app_path: "{{ django_home }}/imagersite"
-    settings: imagersite.settings
+    app_path: "{{ django_home }}/scotland_yard"
+    settings: scotland_yard.settings
     command: migrate
 
 - name: Collect Static Files
   environment:
     DATABASE_URL: "{{ db_url }}"
   django_manage:
-    app_path: "{{ django_home }}/imagersite"
-    settings: imagersite.settings
+    app_path: "{{ django_home }}/scotland_yard"
+    settings: scotland_yard.settings
     command: collectstatic
-
-- name: Make Media Directory
-  sudo: yes
-  file: path={{ django_home }}/imagersite/media state=directory recurse=yes mode=0700 group=www-data owner=www-data
-
-- name: Run Thumbnail makemigrations
-  become: yes
-  become_method: sudo
-  environment:
-    DATABASE_URL: "{{ db_url }}"
-  django_manage:
-    app_path: "{{ django_home }}/imagersite"
-    settings: imagersite.settings
-    command: makemigrations thumbnail
-
-- name: Run Thumbnail Migrate
-  become: yes
-  become_method: sudo
-  environment:
-    DATABASE_URL: "{{ db_url }}"
-  django_manage:
-    app_path: "{{ django_home }}/imagersite"
-    settings: imagersite.settings
-    command: migrate thumbnail
