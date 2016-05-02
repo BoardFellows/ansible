@@ -8,5 +8,6 @@ setuid nobody
 setgid nogroup
 chdir {{ django_home }}/scotland_yard
 env DJANGO_SETTINGS_MODULE=scotland_yard.settings
+env SECRET_KEY=3@y9nysm)zpr9ttwkh#c%y-w@ql78ysqlm6v57xtpe(_))!xj@
 env DATABASE_URL={{ db_url }}
 exec gunicorn -b 127.0.0.1:8000 -w 4 scotland_yard.wsgi --error-logfile /tmp/gunicorn-error.log

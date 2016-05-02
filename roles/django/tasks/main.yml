@@ -36,7 +36,8 @@
 
 - name: Run Migrations
   environment:
-    DATABASE_URL: "{{ db_url }}"
+    - DATABASE_URL: "{{ db_url }}"
+    - SECRET_KEY: "3@y9nysm)zpr9ttwkh#c%y-w@ql78ysqlm6v57xtpe(_))!xj@"
   django_manage:
     app_path: "{{ django_home }}/scotland_yard"
     settings: scotland_yard.settings
@@ -44,7 +45,8 @@
 
 - name: Collect Static Files
   environment:
-    DATABASE_URL: "{{ db_url }}"
+    - DATABASE_URL: "{{ db_url }}"
+    - SECRET_KEY: "3@y9nysm)zpr9ttwkh#c%y-w@ql78ysqlm6v57xtpe(_))!xj@"
   django_manage:
     app_path: "{{ django_home }}/scotland_yard"
     settings: scotland_yard.settings
